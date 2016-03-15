@@ -63,17 +63,25 @@ def checkHitBall(ball, paddle1, paddle2, ballDirX):
     else: return 1
 
 #Checks to see if a point has been scored returns new score
-def checkPointScored(paddle1, ball, score, ballDirX):
+#The score is stored as an list with score[0] mapping to player 1 and score[1] mapping to player 2
+def checkPointScored(paddle1, paddle2, ball, score, ballDirX):
     #reset points if left wall is hit
     if ball.left == LINETHICKNESS: 
-        return 0
-    #1 point for hitting the ball
+        score[0] = 0
+        score[1] += 5
+        return score
+    #1 point for hitting the ball player 1
     elif ballDirX == -1 and paddle1.right == ball.left and paddle1.top < ball.top and paddle1.bottom > ball.bottom:
-        score += 1
+        score[0] += 1
+        return score
+    #1 point for hitting the ball player 2
+    elif ballDirX == 1 and paddle2.left == ball.right and paddle2.top < ball.top and paddle2.bottom > ball.bottom:
+        score[1] += 1
         return score
     #5 points for beating the other paddle
     elif ball.right == WINDOWWIDTH - LINETHICKNESS:
-        score += 5
+        score[0] += 5
+        score[1] = 0
         return score
     #if no points scored, return score unchanged
     else: return score
@@ -96,7 +104,7 @@ def artificialIntelligence(ball, ballDirX, paddle2):
 
 #Displays the current score on the screen
 def displayScore(score):
-    resultSurf = BASICFONT.render('Score = %s' %(score), True, WHITE)
+    resultSurf = BASICFONT.render('Score = {s[0]} {s[1]}'.format(s=score), True, WHITE)
     resultRect = resultSurf.get_rect()
     resultRect.topleft = (WINDOWWIDTH - 150, 25)
     DISPLAYSURF.blit(resultSurf, resultRect)
@@ -120,7 +128,7 @@ def main():
     ballY = WINDOWHEIGHT/2 - LINETHICKNESS/2
     playerOnePosition = (WINDOWHEIGHT - PADDLESIZE) /2
     playerTwoPosition = (WINDOWHEIGHT - PADDLESIZE) /2
-    score = 0
+    score = [0,0]
 
     #Keeps track of ball direction
     ballDirX = -1 ## -1 = left 1 = right
@@ -156,7 +164,7 @@ def main():
 
         ball = moveBall(ball, ballDirX, ballDirY)
         ballDirX, ballDirY = checkEdgeCollision(ball, ballDirX, ballDirY)
-        score = checkPointScored(paddle1, ball, score, ballDirX)
+        score = checkPointScored(paddle1, paddle2, ball, score, ballDirX)
         ballDirX = ballDirX * checkHitBall(ball, paddle1, paddle2, ballDirX)
         paddle2 = artificialIntelligence (ball, ballDirX, paddle2)
 
