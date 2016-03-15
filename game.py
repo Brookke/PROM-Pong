@@ -19,7 +19,7 @@ WHITE     = (255,255,255)
 #Draws the arena the game will be played in. 
 def drawArena():
     DISPLAYSURF.fill((0,0,0))
- #Draw outline of arena
+    #Draw outline of arena
     pygame.draw.rect(DISPLAYSURF, WHITE, ((0,0),(WINDOWWIDTH,WINDOWHEIGHT)), LINETHICKNESS*2)
     #Draw centre line
     pygame.draw.line(DISPLAYSURF, WHITE, ((WINDOWWIDTH/2),0),((WINDOWWIDTH/2),WINDOWHEIGHT), (LINETHICKNESS/4))
