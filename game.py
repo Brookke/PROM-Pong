@@ -17,7 +17,8 @@ class Game():
     def __init__(self,line_thickness=10,speed=5):
         self.line_thickness = line_thickness
         self.speed = speed
-        self.score = 0
+        self.scorePlayer1 = 0
+        self.scorePlayer2 = 0
         
         #Initiate variable and set starting positions
         #any future changes made within rectangles
@@ -59,17 +60,18 @@ class Game():
             self.ball.bounce('x')
         elif self.ball.hit_paddle(self.paddles['user']):
             self.ball.bounce('x')
-            self.score += 1
         elif self.ball.pass_computer():
-            self.score += 5
+            self.scorePlayer1 += 1
+            self.scorePlayer2 = 0
         elif self.ball.pass_player():
-            self.score = 0
+        	self.scorePlayer1 = 0
+        	self.scorePlayer2 += 1
 
         self.draw_arena()
         self.ball.draw()
         self.paddles['user'].draw()
         self.paddles['computer'].draw()
-        self.scoreboard.display(self.score)
+        self.scoreboard.display(self.scorePlayer1, self.scorePlayer2)
             
 
 class Paddle(pygame.sprite.Sprite):
@@ -187,16 +189,18 @@ class Ball(pygame.sprite.Sprite):
             return False
 
 class Scoreboard():
-    def __init__(self,score=0,x=window_width-150,y=25,font_size=20):
-        self.score = score
+    def __init__(self,scorePlayer1=0,scorePlayer2=0,x=window_width-150,y=25,font_size=20):
+        self.scorePlayer1 = scorePlayer1
+        self.scorePlayer2 = scorePlayer2
         self.x = x
         self.y = y
         self.font = pygame.font.Font('freesansbold.ttf', font_size)
 
     #Displays the current score on the screen
-    def display(self,score):
-        self.score = score
-        result_surf = self.font.render('Score = %s' %(self.score), True, WHITE)
+    def display(self,scorePlayer1, scorePlayer2):
+        self.scorePlayer1 = scorePlayer1
+        self.scorePlayer2 = scorePlayer2
+        result_surf = self.font.render('{} {}'.format(self.scorePlayer1, self.scorePlayer2), True, WHITE)
         rect = result_surf.get_rect()
         rect.topleft = (self.x, self.y)
         display_surf.blit(result_surf, rect)
