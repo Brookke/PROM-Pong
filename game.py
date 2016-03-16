@@ -11,6 +11,7 @@ WINDOWHEIGHT = 300
 LINETHICKNESS = 10
 PADDLESIZE = 50
 PADDLEOFFSET = 20
+AIDIFFICULTY = 0.8
 
 # Set up the colours
 BLACK     = (0  ,0  ,0  )
@@ -89,9 +90,9 @@ def artificialIntelligence(ball, ballDirX, paddle2):
     #if ball moving towards bat, track its movement. 
     elif ballDirX == 1:
         if paddle2.centery < ball.centery:
-            paddle2.y += 1
+            paddle2.y += AIDIFFICULTY
         else:
-            paddle2.y -= 1
+            paddle2.y -= AIDIFFICULTY
     return paddle2
 
 #Displays the current score on the screen
