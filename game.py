@@ -1,5 +1,6 @@
 import pygame, sys
 from pygame.locals import *
+import serialBox
 
 # Set up the colours
 BLACK     = (0,0,0)
