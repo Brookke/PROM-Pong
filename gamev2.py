@@ -5,14 +5,18 @@ window_height = 20
 
 class Game:
     def __init__(self):
-        self.speed = 5
+        self.speed = 1
         self.screen = serialBox.screen(window_width,window_height)
+        self.screen.clear()
         self.scorePlayer1 = 0
         self.scorePlayer2 = 0
         #Initiate variable and set starting positions
         #any future changes made within rectangles
         ball_x = int(window_width/2)
         ball_y = int(window_height/2)
+        ball_radius = 1
+        ball_color = serialBox.colors.GREEN
+        self.ball = Ball(ball_x, ball_y, ball_radius, ball_color, 1, self.screen)
       
         self.paddles = {}
         paddle_height = 3
@@ -28,6 +32,18 @@ class Game:
         self.paddles['player1'] = Paddle(player1_paddle_x, player1_paddle_y, paddle_height, player1_color, "vertical", self.screen)
         self.paddles['player2'] = Paddle(player2_paddle_x, player2_paddle_y, paddle_height, player2_color, "vertical", self.screen)
 
+    def update(self):
+        self.ball.move()
+        if self.paddle_ball_collision():
+            self.ball.bounce('x')
+
+    def paddle_ball_collision(self):
+        if self.ball.dir_x == 1 and self.ball.y >= self.paddles['player2'].y and self.ball.y <= (self.paddles['player2'].y + self.paddles['player2'].length) and self.ball.x == (self.paddles['player2'].x - 1):
+            return True
+        elif self.ball.dir_x == -1 and self.ball.y >= self.paddles['player1'].y and self.ball.y <= (self.paddles['player1'].y + self.paddles['player1'].length) and self.ball.x == (self.paddles['player1'].x - 1):
+            return True
+        else:
+            return False
 
 
 #extend the line package 
@@ -46,22 +62,67 @@ class Paddle(serialBox.line):
 
 class Ball(serialBox.rect):
     """docstring for Ball"""
-    def __init__(self, arg):
-        super(Ball, self).__init__()
-        
-        
+    def __init__(self, x, y, radius, color, speed, screen):
+        super(Ball, self).__init__(x,y,radius,radius,color)
+        self.speed = speed
+        self.dir_x = -1
+        self.dir_y = -1
+        self.screen = screen
+        self.draw(self.screen)
+
+    def move(self):
+        self.clear(self.screen)
+        self.x += (self.dir_x * self.speed)
+        self.y += (self.dir_y * self.speed)
+        self.draw(self.screen)
+
+        if self.hit_ceiling() or self.hit_floor():
+            self.bounce('y')
+        if self.hit_left() or self.hit_right():
+            self.bounce('x')
+
+    def bounce(self,axis):
+        if axis == 'x':
+            self.dir_x *= -1
+        elif axis == 'y':
+            self.dir_y *= -1
+
+    def hit_ceiling(self):
+        if self.dir_y == -1 and self.y == 1: 
+            return True
+        else:
+            return False
+
+    def hit_floor(self):
+        if self.dir_y == 1 and self.y == self.screen.height - 1:
+            return True
+        else:
+            return False
+
+    def hit_left(self):
+        if self.x == 1:
+            return True
+        else:
+            return False
+
+    def hit_right(self):
+        if self.x == self.screen.width -1:
+            return True
+        else:
+            return False
+
+
 
 game = Game()
 time.sleep(1)
 import Tkinter as tk
 root = tk.Tk()
-
-def motion(event):
-    x, y = event.x, event.y
+while True:
+    game.update()
+    y = root.winfo_pointery()
     game.paddles['player1'].move(y/5)
+    time.sleep(1)
 
-root.bind('<Motion>', motion)
-root.mainloop()
 
 
 
