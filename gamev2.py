@@ -10,6 +10,12 @@ class Game:
         self.screen.clear()
         self.scorePlayer1 = 0
         self.scorePlayer2 = 0
+        self.scoreBoard = {}
+        self.scoreBoard['player1'] = Score(window_width/2 - 7, 0, serialBox.colors.WHITE, self.screen, self.scorePlayer1)
+        self.scoreBoard['player2'] = Score(window_width/2 + 2, 0, serialBox.colors.WHITE, self.screen, self.scorePlayer2)
+
+        self.scoreBoard['player1'].draw()
+        self.scoreBoard['player2'].draw()
         #Initiate variable and set starting positions
         #any future changes made within rectangles
         ball_x = int(window_width/2)
@@ -17,7 +23,6 @@ class Game:
         ball_radius = 1
         ball_color = serialBox.colors.GREEN
         self.ball = Ball(ball_x, ball_y, ball_radius, ball_color, 0.00009, self.screen)
-      
         self.paddles = {}
         paddle_height = 3
         player1_paddle_x = 3
@@ -40,6 +45,9 @@ class Game:
             self.scorePlayer1 += 1 
         if self.paddle_ball_collision():
             self.ball.bounce('x')
+
+        self.scoreBoard['player1'].update_score(self.scorePlayer1)
+        self.scoreBoard['player2'].update_score(self.scorePlayer2)
 
     def paddle_ball_collision(self):
         if self.ball.dir_x == 1 and self.ball.y >= self.paddles['player2'].y and self.ball.y <= (self.paddles['player2'].y + self.paddles['player2'].length) and self.ball.x >= (self.paddles['player2'].x):
@@ -125,6 +133,15 @@ class Ball(serialBox.rect):
             return False
 
 
+class Score(serialBox.text):
+    def __init__(self, x, y, color, screen, value):
+        super(Score, self).__init__(x,y,color, screen, value)
+
+    def update_score(self, new_score):
+        if self.value != new_score:
+            self.clear()
+            self.value = new_score
+            self.draw()
 
 game = Game()
 
